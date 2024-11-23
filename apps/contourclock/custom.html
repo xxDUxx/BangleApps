@@ -21,7 +21,7 @@
       var oldsettings;
       function onInit() {
         console.log("debug 1");
-        Util.readStorageJSON("contourclock.settings.js",(settings)=>{
+        Util.readStorageJSON("contourclock.settings.js",settings=>{
           console.log("debug 2");
           console.log(settings);
         });
