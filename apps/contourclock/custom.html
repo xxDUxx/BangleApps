@@ -20,7 +20,9 @@
     <script>
       var oldsettings;
       function onInit() {
-        Util.readStorageJSON("contourclock.settings.js",settings=>{
+        console.log("1");
+        Util.readStorageJSON("contourclock.settings.js",(settings)=>{
+          console.log("2");
           console.log(settings);
         });
         //get installed and selected fonts. 
