@@ -18,6 +18,13 @@
   <form>
     <script src="../../core/lib/customize.js"></script>
     <script>
+      var oldsettings;
+      function onInit() {
+        Util.readStorageJSON("contourclock.settings.js",settings=>{
+          console.log(settings);
+        });
+        //get installed and selected fonts. 
+      }
       console.log("TEST");
       const FontList = ["Teko", "LuckiestGuy", "Bangers", "RubikOne", "Oswald", "Anton", "TitanOne", "BarlowCond", "BebasNeue", "Dekko", "DinAlternate",
       "Impact", "Nunito", "OpenSansEC", "Phosphate", "Quicksand", "SairaEC",
