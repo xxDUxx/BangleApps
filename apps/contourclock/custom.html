@@ -19,6 +19,7 @@
     <script src="../../core/lib/customize.js"></script>
     <script>
       var settings;
+      var oldFontList;
       function onInit() {
         console.log("debug 1");
         Util.readStorageJSON("contourclock.json",s => {
@@ -26,6 +27,7 @@
           console.log(settings);
         });
         //get installed and selected fonts. 
+        oldFontList=settings.fontList;
       }
       console.log("TEST 3");
       const FontList = ["Teko", "LuckiestGuy", "Bangers", "RubikOne", "Oswald", "Anton", "TitanOne", "BarlowCond", "BebasNeue", "Dekko", "DinAlternate",
@@ -54,11 +56,10 @@
       btn.addEventListener("click", function() {
         var n=0;
         var fontFiles = [];
-        var fontList = [];
+        var fontNames = [];
         for (fontElement of document.getElementsByName("font")) 
-        //check which fonts should be deleted
           if (fontElement.checked==true) {
-            fontList.push(fontElement.id);
+            fontNames.push(fontElement.id);
             fontFiles.push({
               name:"contourclock.f."+fontElement.id+".js",
               url:"fonts/font-"+fontElement.id+".json"
@@ -67,7 +68,12 @@
           }
         }
         if (n>0) {
-          settings.fontList=fontList;
+          for (const f of oldFontList) {
+            if (!fontNames.includes(f)) {
+              Util.eraseStorage("contourclock.f."+f+".js");
+            }
+          }
+          settings.fontList=fontNames;
           sendCustomizedApp({storage:fontFiles});
           Util.writeStorage("countourclock.json",settings);
         } else {
