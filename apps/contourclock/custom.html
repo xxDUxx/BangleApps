@@ -18,14 +18,16 @@
   <form>
     <script src="../../core/lib/customize.js"></script>
     <script>
-      var oldsettings;
+      var settings;
       function onInit() {
-        Util.readStorageJSON("contourclock.settings.js",settings=>{
+        console.log("debug 1");
+        Util.readStorageJSON("contourclock.json",s => {
+          settings=s;
           console.log(settings);
         });
         //get installed and selected fonts. 
       }
-      console.log("TEST");
+      console.log("TEST 3");
       const FontList = ["Teko", "LuckiestGuy", "Bangers", "RubikOne", "Oswald", "Anton", "TitanOne", "BarlowCond", "BebasNeue", "Dekko", "DinAlternate",
       "Impact", "Nunito", "OpenSansEC", "Phosphate", "Quicksand", "SairaEC",
       "Yumaro", "YuseiMagic", "MouseMemoirs", "ArchivoNarrow", "FjallaOne", "NerkoOne"];
@@ -51,19 +53,22 @@
       btn.innerHTML="Upload selected Fonts";
       btn.addEventListener("click", function() {
         var n=0;
-        var fonts = [];
+        var fontFiles = [];
+        var fontList = [];
         for (fontElement of document.getElementsByName("font")) {
           if (fontElement.checked==true) {
-            fonts.push({
-              name:"contourclock-"+n+".json",
+            fontList.push(fontElement.id);
+            fontFiles.push({
+              name:"contourclock.f."+fontElement.id+".js",
               url:"fonts/font-"+fontElement.id+".json"
             });
             n++;
           }
         }
         if (n>0) {
-          fonts.push({name:"contourclock-install.json", content:"{\"n\":"+n+"}"});
-          sendCustomizedApp({storage:fonts});
+          settings.fontList=fontList;
+          sendCustomizedApp({storage:fontFiles});
+          Util.writeStorage("countourclock.json",settings);
         } else {
           alert("Please select at least one Font!");
         }
