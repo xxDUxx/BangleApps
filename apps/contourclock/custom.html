@@ -55,7 +55,8 @@
         var n=0;
         var fontFiles = [];
         var fontList = [];
-        for (fontElement of document.getElementsByName("font")) {
+        for (fontElement of document.getElementsByName("font")) 
+        //check which fonts should be deleted
           if (fontElement.checked==true) {
             fontList.push(fontElement.id);
             fontFiles.push({
