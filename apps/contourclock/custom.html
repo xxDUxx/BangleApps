@@ -21,6 +21,11 @@
       var oldsettings;
       function onInit() {
         console.log("debug 1");
+        Puck.write(`\x10(function() {
+          Bluetooth.println("Hello World!");
+        })()\n`, reply => {
+          console.log(reply);
+        });
         Util.readStorageJSON("contourclock.json",settings => {
           console.log("debug 2");
           console.log(settings);
