@@ -21,9 +21,7 @@
       var oldsettings;
       function onInit() {
         console.log("debug 1");
-        Puck.write(`\x10(function() {
-          Bluetooth.println("Hello World!");
-        })()\n`, reply => {
+        Puck.write("Bluetooth.println("Hello World!");", reply => {
           console.log(reply);
         });
         Util.readStorageJSON("contourclock.json",settings => {
@@ -32,7 +30,7 @@
         });
         //get installed and selected fonts. 
       }
-      console.log("TEST 3");
+      console.log("TEST 4");
       const FontList = ["Teko", "LuckiestGuy", "Bangers", "RubikOne", "Oswald", "Anton", "TitanOne", "BarlowCond", "BebasNeue", "Dekko", "DinAlternate",
       "Impact", "Nunito", "OpenSansEC", "Phosphate", "Quicksand", "SairaEC",
       "Yumaro", "YuseiMagic", "MouseMemoirs", "ArchivoNarrow", "FjallaOne", "NerkoOne"];
