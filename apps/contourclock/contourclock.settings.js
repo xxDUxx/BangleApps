@@ -1,7 +1,16 @@
 (function(back) {
   Bangle.setUI("");
-  var settings = require('Storage').readJSON('contourclock.json', true) || {};
+  g.reset();
+  let is12;
+  let getHours = function(d) {
+    let h = d.getHours();
+    if (is12===undefined) is12 = (require('Storage').readJSON('setting.json',1)||{})["12hour"];
+    if (!is12) return h;
+    return (h%12==0) ? 12 : h%12;
+  };
+  let settings = require('Storage').readJSON('contourclock.json', true) || {};
   if (settings.fontIndex==undefined) {
+    settings.drawMode = 1;
     settings.fontIndex=0;
     settings.widgets=true;
     settings.weekday=true;
@@ -10,6 +19,47 @@
     settings.tapToShow=false;
     settings.twistToShow=false;
     require('Storage').writeJSON("contourclock.json", settings);
+  }
+  let fontList = require("Storage").list(/^contourclock-.*.js$/);
+  function drawClock() {
+    g.clearRect(0,g.getHeight()-36,g.getWidth()-1,g.getHeight()-36+16);
+    g.setFont('6x8:2x2').setFontAlign(0,-1).
+      drawString(fontList[settings.fontIndex].substring(13,fontList[settings.fontIndex].length-3),g.getWidth()/2,g.getHeight()-36);
+    let font = eval(require('Storage').read(fontList[settings.fontIndex]));
+    let x=0;
+    let y = g.getHeight()/2-font.characters[0].height/2;
+    let date = new Date();
+    g.clearRect(0,38,g.getWidth()-1,138);
+    let d1=parseInt(getHours(date)/10);
+    let d2=parseInt(getHours(date)%10);
+    let d3=10;
+    let d4=parseInt(date.getMinutes()/10);
+    let d5=parseInt(date.getMinutes()%10);
+    let w1=font.characters[d1].width;
+    let w2=font.characters[d2].width;
+    let w3=font.characters[d3].width;
+    let w4=font.characters[d4].width;
+    let w5=font.characters[d5].width;
+    let squeeze=(g.getWidth()-w5)/(w1+w2+w3+w4);
+    let fg=g.getColor();
+    let bg=g.getBgColor();
+    if (settings.drawMode<0) {
+      g.setColor(bg);
+      g.setBgColor(fg);
+    }
+    g.drawImage(font.characters[d1],x,y);
+    x+=parseInt(w1*squeeze);
+    g.drawImage(font.characters[d2],x,y);
+    x+=parseInt(w2*squeeze);
+    g.drawImage(font.characters[d3],x,y);
+    x+=parseInt(w3*squeeze);
+    g.drawImage(font.characters[d4],x,y);
+    x+=parseInt(w4*squeeze);
+    g.drawImage(font.characters[d5],x,y);        
+    if (settings.drawMode<0) {
+      g.setColor(fg);
+      g.setBgColor(bg);
+    }
   }
   function mainMenu() {
     E.showMenu({
@@ -59,20 +109,17 @@
       mainMenu();
     });
     swipeListener = Bangle.on('swipe', function (direction) {
-      var fontName = require('contourclock').drawClock(settings.fontIndex+direction);
-      if (fontName) {
-        settings.fontIndex+=direction;
-        g.clearRect(0,g.getHeight()-36,g.getWidth()-1,g.getHeight()-36+16);
-        g.setFont('6x8:2x2').setFontAlign(0,-1).drawString(fontName,g.getWidth()/2,g.getHeight()-36);
-      } else {
-        require('contourclock').drawClock(settings.fontIndex);
+      settings.fontIndex=Math.clip(settings.fontIndex+direction*settings.drawMode,-1,fontList.length-1);
+      if (settings.fontIndex<0) {
+        settings.fontIndex=0;
+        settings.drawMode=settings.drawMode*-1;
       }
+      drawClock(settings.fontIndex);
     });
     g.reset();
     g.clearRect(0,24,g.getWidth()-1,g.getHeight()-1);
-    g.setFont('6x8:2x2').setFontAlign(0,-1);
-    g.drawString(require('contourclock').drawClock(settings.fontIndex),g.getWidth()/2,g.getHeight()-36);
-    g.drawString('Button to save',g.getWidth()/2,g.getHeight()-18);
+    drawClock(settings.fontIndex);
+    g.setFont('6x8:2x2').setFontAlign(0,-1).drawString('Button to save',g.getWidth()/2,g.getHeight()-18);
   }
   mainMenu();
 })
