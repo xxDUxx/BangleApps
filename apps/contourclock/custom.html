@@ -30,7 +30,6 @@
           }
         });
         //installedFiles = ['contourclock-Oswald.json', 'contourclock-1.json', 'contourclock-2.json', 'contourclock-test.js'];
-        console.log("Found these fonts on watch: "+installedFonts);
         /*
         Util.readStorageJSON("contourclock.json",s => {
           settings=s;
@@ -40,11 +39,13 @@
         //get installed and selected fonts. 
       }*/
       }
-      console.log("TEST 8");
+      console.log("TEST 9");
       /*const FontList = ["Teko", "Luckiest Guy", "Bangers", "RubikOne", "Oswald", "Anton", "TitanOne", "BarlowCond", "BebasNeue", "Dekko", "DinAlternate",
       "Impact", "Nunito", "OpenSansEC", "Phosphate", "Quicksand", "SairaEC",
       "Yumaro", "YuseiMagic", "MouseMemoirs", "ArchivoNarrow", "FjallaOne", "NerkoOne"];*/
       const FontList = ["LuckiestGuy", "Oswald", "MouseMemoirs"];
+      console.log("Installed: "+installedFonts);
+      console.log("All Fonts: "+FontList);
       for (fontName of FontList) {
         var cb = document.createElement('input');
         cb.type = 'checkbox';
