@@ -1,8 +1,16 @@
 {
+  let is12;
+  let getHours = function(d) {
+    let h = d.getHours();
+    if (is12===undefined) is12 = (require('Storage').readJSON('setting.json',1)||{})["12hour"];
+    if (!is12) return h;
+    return (h%12==0) ? 12 : h%12;
+  };
   let drawTimeout;
   let extrasTimer=0;
   let settings = require('Storage').readJSON("contourclock.json", true) || {};
   if (settings.fontIndex == undefined) {
+    settings.drawMode = 1;
     settings.fontIndex = 0;
     settings.widgets = true;
     settings.weekday = true;
@@ -13,17 +21,45 @@
     require('Storage').writeJSON("contourclock.json", settings);
   }
   require("FontTeletext10x18Ascii").add(Graphics);
-  let installedFonts = require('Storage').readJSON("contourclock-install.json") || {};
-  // New install - check for unused font files. This should probably be handled by the installer instead
-  if (installedFonts.n > 0) { 
-    settings.fontIndex = E.clip(settings.fontIndex, -installedFonts.n + 1, installedFonts.n - 1);
-    require('Storage').writeJSON("contourclock.json", settings);
-    for (let n = installedFonts.n;; n++) {
-      if (require("Storage").read("contourclock-" + n + ".json") == undefined) break;
-      require("Storage").erase("contourclock-" + n + ".json");
+  let fontList = require("Storage").list(/^contourclock-.*.js$/);
+  let font = eval(require('Storage').read(fontList[settings.fontIndex]));
+  let drawClock = function () {
+    g.clearRect(0,g.getHeight()-36,g.getWidth()-1,g.getHeight()-36+16);
+    let x=0;
+    let y = g.getHeight()/2-font.characters[0].height/2;
+    let date = new Date();
+    g.clearRect(0,38,g.getWidth()-1,138);
+    let d1=parseInt(getHours(date)/10);
+    let d2=parseInt(getHours(date)%10);
+    let d3=10;
+    let d4=parseInt(date.getMinutes()/10);
+    let d5=parseInt(date.getMinutes()%10);
+    let w1=font.characters[d1].width;
+    let w2=font.characters[d2].width;
+    let w3=font.characters[d3].width;
+    let w4=font.characters[d4].width;
+    let w5=font.characters[d5].width;
+    let squeeze=(g.getWidth()-w5)/(w1+w2+w3+w4);
+    let fg=g.getColor();
+    let bg=g.getBgColor();
+    if (settings.drawMode<0) {
+      g.setColor(bg);
+      g.setBgColor(fg);
     }
-    require("Storage").erase("contourclock-install.json");
-  }
+    g.drawImage(font.characters[d1],x,y);
+    x+=parseInt(w1*squeeze);
+    g.drawImage(font.characters[d2],x,y);
+    x+=parseInt(w2*squeeze);
+    g.drawImage(font.characters[d3],x,y);
+    x+=parseInt(w3*squeeze);
+    g.drawImage(font.characters[d4],x,y);
+    x+=parseInt(w4*squeeze);
+    g.drawImage(font.characters[d5],x,y);        
+    if (settings.drawMode<0) {
+      g.setColor(fg);
+      g.setBgColor(bg);
+    }
+  };
   let onLock = function(locked) {if (!locked) showExtras();};
   let showExtras = function() { //show extras for 5s
     drawExtras();
@@ -66,7 +102,10 @@
     }
     g.reset();
     if (!settings.hideWhenLocked) drawExtras();
-    require('contourclock').drawClock(settings.fontIndex);
+    let t1=Date.now();
+    drawClock();
+    print ("T:"+(Date.now()-t1));
+    print ("M:"+process.memory().usage+"/"+process.memory().total);
   };
   if (settings.hideWhenLocked) {
     Bangle.on('lock', onLock);
