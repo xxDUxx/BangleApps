@@ -23,15 +23,14 @@
       var settings={fontList:[]};
       var installedFonts = [];
       function onInit() {
-        console.log("debug 1");
         Puck.eval(`require("Storage").list(/^contourclock-.*.js$/)`,files=>{
-          console.log(files);
+          //console.log(files);
           for (f of files) {
             installedFonts.push(file2Font(f));
           }
         });
         //installedFiles = ['contourclock-Oswald.json', 'contourclock-1.json', 'contourclock-2.json', 'contourclock-test.js'];
-        console.log(installedFonts);
+        console.log("Found these fonts on watch: "+installedFonts);
         /*
         Util.readStorageJSON("contourclock.json",s => {
           settings=s;
@@ -41,7 +40,7 @@
         //get installed and selected fonts. 
       }*/
       }
-      console.log("TEST 7");
+      console.log("TEST 8");
       /*const FontList = ["Teko", "Luckiest Guy", "Bangers", "RubikOne", "Oswald", "Anton", "TitanOne", "BarlowCond", "BebasNeue", "Dekko", "DinAlternate",
       "Impact", "Nunito", "OpenSansEC", "Phosphate", "Quicksand", "SairaEC",
       "Yumaro", "YuseiMagic", "MouseMemoirs", "ArchivoNarrow", "FjallaOne", "NerkoOne"];*/
@@ -73,17 +72,17 @@
         for (let fontElement of document.getElementsByName("font")) {
           if (fontElement.checked==true) {newFonts.push(fontElement.id)}
         }
-        for (let f of installedFonts) {
+        for (let f of installedFonts) { //delete unused fonts 
           if (!newFonts.includes(f)) {
-            Util.eraseStorage("contourclock-"+f+".js");   
-            console.log("deleting "+"contourclock-"+f+".js");
+            Util.eraseStorage(file2Font(f));   
+            console.log("deleting "+file2Font(f));
           } 
         }
-        if (newFonts.length>0) { 
+        if (newFonts.length>0) { //select new fonts to upload
           let storageFiles = [];
           settings.fontList=[];
           for (let f of newFonts) {
-            console.log(font2File(f));
+            console.log("uploading "+font2File(f));
             settings.fontList.push(f);
             storageFiles.push({
               name:font2File(f),
@@ -95,6 +94,7 @@
             name:"contourclock.json",
             content:settings
           })*/
+          conole.log ("Storage:");
           console.log(JSON.stringify(storageFiles));
           sendCustomizedApp({storage:storageFiles});
         } else {
