@@ -22,9 +22,9 @@
       let installedFonts = [];
       function file2Font(f) {return(f.slice(13,-3))};
       function font2File(f) {return("contourclock-"+f+".js")}
-      function onInit() {
+      function onInit(b) {
         console.log("reading installed fonts");
-        console.log(appsInstalled);
+        console.log(b.appsInstalled);
         /*Puck.eval(`require("Storage").list(/^contourclock-.*.js$/)`,files=>{
           console.log(files);
           for (f of files) {
