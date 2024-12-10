@@ -24,13 +24,13 @@
       function font2File(f) {return("contourclock-"+f+".js")}
       function onInit(b) {
         console.log("reading installed fonts");
-        console.log(b.appsInstalled);
-        /*Puck.eval(`require("Storage").list(/^contourclock-.*.js$/)`,files=>{
-          console.log(files);
-          for (f of files) {
-            installedFonts.push(file2Font(f));
+        files = b.appsInstalled.find((v) => (v.id=="contourclock")).files;
+        for (f of FontList) {
+          if (files.includes(f)){
+            console.log("found: "+f);
+            installedFonts.push(f)
           }
-        });*/
+        }
         console.log("Installed: "+installedFonts);
         console.log("All Fonts: "+FontList);
         for (fontName of FontList) {
